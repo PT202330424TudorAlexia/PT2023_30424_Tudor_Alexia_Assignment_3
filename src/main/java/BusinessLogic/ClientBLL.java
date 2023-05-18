@@ -13,25 +13,42 @@ import Model.Client;
 public class ClientBLL {
 
     private List<Validator<Client>> validators;
+    private ClientDAO clientDAO;
 
     public ClientBLL() {
         validators = new ArrayList<Validator<Client>>();
         validators.add(new EmailValidator());
         validators.add(new StudentAgeValidator());
+
+        clientDAO = new ClientDAO();
     }
 
-    public Client findClientById(int id) {
-        Client st = ClientDAO.findById(id);
+    public Client findStudentById(int id) {
+        Client st = clientDAO.findById(id);
         if (st == null) {
             throw new NoSuchElementException("The Client with id =" + id + " was not found!");
         }
         return st;
     }
 
-    public int insertClient(Client client) {
+    public Client insertClient(Client client) {
         for (Validator<Client> v : validators) {
             v.validate(client);
         }
-        return ClientDAO.insert(client);
+        return clientDAO.insert(client);
+
     }
+
+    public Client deleteClient(Client client) {
+        return clientDAO.delete(client);
+    }
+
+    public Client updateClient(Client client) {
+        for (Validator<Client> v : validators) {
+            v.validate(client);
+        }
+        return clientDAO.update(client);
+
+    }
+
 }

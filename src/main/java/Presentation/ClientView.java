@@ -1,14 +1,13 @@
 package Presentation;
 
+import BusinessLogic.ClientBLL;
 import Connection.ConnectionFactory;
+import Model.Client;
 
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -41,18 +40,21 @@ public class ClientView extends javax.swing.JFrame {
 
     public ClientView() {
         initComponents();
-        setStudentDetailsToTable();
+        setClientDetailsToTable();
 
     }
 
-    public void setStudentDetailsToTable() {
+    public void setClientDetailsToTable() {
+        Connection con = null;
+        Statement stmt = null;
+        ResultSet rs = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = ConnectionFactory.getConnection();
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("select * from client");
+            con = ConnectionFactory.getConnection();
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM client");
 
+            // Process the ResultSet and populate the table
             while (rs.next()) {
                 String id = rs.getString("id");
                 String name = rs.getString("name");
@@ -64,95 +66,83 @@ public class ClientView extends javax.swing.JFrame {
                 model = (DefaultTableModel) clientTable.getModel();
                 model.addRow(obj);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            // Handle any SQL exceptions
             e.printStackTrace();
+        } finally {
+            // Close the ResultSet, Statement, and Connection
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-    }
+}
 
-    public boolean addStudent() {
+        public boolean addClient() {
         boolean isAdded = false;
         id = Integer.parseInt(txt_id.getText());
         name = txt_name.getText();
         address = txt_address.getText();
         email = txt_email.getText();
         age = Integer.parseInt(txt_age.getText());
+        Client client = new Client(id, name, address, email, age);
+        ClientBLL bll=new ClientBLL();
 
+        bll.insertClient(client);
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "insert into client values(?,?,?,?,?)";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
-            pst.setString(2, name);
-            pst.setString(3, address);
-            pst.setString(4, email);
-            pst.setInt(5, age);
-
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isAdded = true;
-            } else {
-                isAdded = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (client!=null) {
+            isAdded = true;
+        } else {
+            isAdded = false;
         }
+
         return isAdded;
 
     }
 
-    public boolean updateStudent() {
+    public boolean updateClient() {
         boolean isUpdated = false;
         id = Integer.parseInt(txt_id.getText());
         name = txt_name.getText();
         address = txt_address.getText();
         email = txt_email.getText();
         age = Integer.parseInt(txt_age.getText());
+        Client client = new Client(id, name, address, email, age);
+        ClientBLL bll=new ClientBLL();
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "update client set name = ?,address = ?,email = ?,age = ? where id = ?";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, name);
-            pst.setString(2, address);
-            pst.setString(3, email);
-            pst.setInt(4, age);
-            pst.setInt(5, id);
-
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
+        bll.updateClient(client);
+            if (client != null) {
                 isUpdated = true;
             } else {
                 isUpdated = false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         return isUpdated;
     }
 
-    public boolean deleteStudent() {
+    public boolean deleteClient() {
         boolean isDeleted = false;
         id = Integer.parseInt(txt_id.getText());
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "delete from client where id = ? ";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
+        Client client = new Client(id, name, address, email, age);
+        ClientBLL bll=new ClientBLL();
 
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
+        bll.deleteClient(client);
+            if (client !=null ) {
                 isDeleted = true;
             } else {
                 isDeleted = false;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         return isDeleted;
     }
 
@@ -310,6 +300,11 @@ public class ClientView extends javax.swing.JFrame {
         clientTable.setRowHeight(40);
         clientTable.setFocusable(false);
         clientTable.setVisible(true);
+        clientTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                setClientTable(evt);
+            }
+        });
 
         scrollPane = new JScrollPane(clientTable);
         scrollPane.setAutoscrolls(true);
@@ -323,6 +318,19 @@ public class ClientView extends javax.swing.JFrame {
         frame.setVisible(true);
     }
 
+    private void setClientTable(java.awt.event.MouseEvent evt) {
+
+        int rowNo = clientTable.getSelectedRow();
+        DefaultTableModel table = (DefaultTableModel) clientTable.getModel();
+
+        txt_id.setText(model.getValueAt(rowNo, 0).toString());
+        txt_name.setText(model.getValueAt(rowNo, 1).toString());
+        txt_address.setText(model.getValueAt(rowNo, 2).toString());
+        txt_email.setText(model.getValueAt(rowNo, 3).toString());
+        txt_age.setText(model.getValueAt(rowNo, 4).toString());
+
+    }
+
     private void backAction(java.awt.event.MouseEvent evt) {
         frame.dispose();
         View home = new View();
@@ -330,30 +338,30 @@ public class ClientView extends javax.swing.JFrame {
     }
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        if (addStudent() == true) {
+        if (addClient() == true) {
             JOptionPane.showMessageDialog(this, "Client Added");
             clearTable();
-            setStudentDetailsToTable();
+            setClientDetailsToTable();
         } else {
             JOptionPane.showMessageDialog(this, "Client Addition Failed");
         }
     }
 
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        if (updateStudent() == true) {
+        if (updateClient() == true) {
             JOptionPane.showMessageDialog(this, "Client Updated");
             clearTable();
-            setStudentDetailsToTable();
+            setClientDetailsToTable();
         } else {
             JOptionPane.showMessageDialog(this, "Client Updation Failed");
         }
     }
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        if (deleteStudent() == true) {
+        if (deleteClient() == true) {
             JOptionPane.showMessageDialog(this, "Client Deleted");
             clearTable();
-            setStudentDetailsToTable();
+            setClientDetailsToTable();
         } else {
             JOptionPane.showMessageDialog(this, "Client Deletion Failed");
         }

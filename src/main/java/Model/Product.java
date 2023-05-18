@@ -3,26 +3,32 @@ package Model;
 public class Product {
     private int id;
     private String name;
-    private int nr;
+    private int stock;
     private int price;
     private String emailRep;
 
 
-    public Product(int id,String name,int nr,String emailRep)
+    public Product(int id,String name,int stock,int price,String emailRep)
     {
         super();
         this.id=id;
         this.name=name;
-        this.nr=nr;
+        this.stock=stock;
+        this.price=price;
         this.emailRep=emailRep;
     }
 
-    public Product(String name,int nr,String emailRep)
+    public Product(String name,int stock,int price,String emailRep)
     {
         super();
         this.name=name;
-        this.nr=nr;
+        this.stock=stock;
+        this.price=price;
         this.emailRep=emailRep;
+    }
+
+    public Product()
+    {
     }
 
     public int getId() {
@@ -41,14 +47,6 @@ public class Product {
         this.name = name;
     }
 
-    public int getNr() {
-        return nr;
-    }
-
-    public void setNr(int nr) {
-        this.nr = nr;
-    }
-
     public String getEmailRep() {
         return emailRep;
     }
@@ -63,5 +61,13 @@ public class Product {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
     }
 }

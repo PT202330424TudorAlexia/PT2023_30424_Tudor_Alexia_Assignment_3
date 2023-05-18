@@ -1,6 +1,11 @@
 package Presentation;
 
+import BusinessLogic.OrderBLL;
+import BusinessLogic.ProductBLL;
 import Connection.ConnectionFactory;
+import Model.Order;
+import Model.Product;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -8,6 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +25,7 @@ public class OrderView extends javax.swing.JFrame{
     int id, idClient,idProduct,sum;
     DefaultTableModel model;
     JButton[] functionButtons = new JButton[3];
-    JButton addButton, updateButton, deleteButton;
+    JButton addButton, updateButton, deleteButton, billButton;
     JFrame frame;
     private JLabel jLabel1;
     private JLabel jLabel2;
@@ -51,7 +58,7 @@ public class OrderView extends javax.swing.JFrame{
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con = ConnectionFactory.getConnection();
             Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("select * from order");
+            ResultSet rs = st.executeQuery("select * from `order`");
 
             while (rs.next()) {
                 String id = rs.getString("id");
@@ -76,25 +83,17 @@ public class OrderView extends javax.swing.JFrame{
         idProduct = Integer.parseInt(txt_idProduct.getText());
         sum = Integer.parseInt(txt_sum.getText());
 
+        Order order = new Order(id, idClient, idProduct,sum);
+        OrderBLL bll=new OrderBLL();
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "insert into order values(?,?,?,?)";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
-            pst.setInt(2, idClient);
-            pst.setInt(3, idProduct);
-            pst.setInt(4, sum);
+        bll.insertOrder(order);
 
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isAdded = true;
-            } else {
-                isAdded = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (order!=null) {
+            isAdded = true;
+        } else {
+            isAdded = false;
         }
+
         return isAdded;
 
     }
@@ -106,23 +105,15 @@ public class OrderView extends javax.swing.JFrame{
         idProduct = Integer.parseInt(txt_idProduct.getText());
         sum = Integer.parseInt(txt_sum.getText());
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "update order set idClient = ?,idProduct = ?,sum = ? where id = ?";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, idClient);
-            pst.setInt(2, idProduct);
-            pst.setInt(3, sum);
-            pst.setInt(4, id);
+        Order order = new Order(id, idClient, idProduct,sum);
+        OrderBLL bll=new OrderBLL();
 
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isUpdated = true;
-            } else {
-                isUpdated = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        bll.updateOrder(order);
+
+        if (order != null) {
+            isUpdated = true;
+        } else {
+            isUpdated = false;
         }
 
         return isUpdated;
@@ -131,29 +122,22 @@ public class OrderView extends javax.swing.JFrame{
     public boolean deleteOrder() {
         boolean isDeleted = false;
         id = Integer.parseInt(txt_id.getText());
+        Order order = new Order(id, idClient, idProduct,sum);
+        OrderBLL bll=new OrderBLL();
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "delete from order where id = ? ";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
+        bll.deleteOrder(order);
 
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isDeleted = true;
-            } else {
-                isDeleted = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (order !=null ) {
+            isDeleted = true;
+        } else {
+            isDeleted = false;
         }
-
         return isDeleted;
     }
 
     public void clearTable() {
         DefaultTableModel table = (DefaultTableModel) orderTable.getModel();
-        model.setRowCount(0);
+        table.setRowCount(0);
     }
 
     private void initComponents() {
@@ -269,6 +253,18 @@ public class OrderView extends javax.swing.JFrame{
         });
         frame.add(updateButton);
 
+        billButton.setBackground(new Color(250, 199, 72));
+        billButton.setText("Update");
+        billButton.setBounds(625, 480, 80, 40);
+
+        billButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                billButtonActionPerformed(evt);
+            }
+        });
+        frame.add(billButton);
+
+
         back.setFont(new Font("Verdana", 0, 17));
         back.setForeground(new Color(250, 199, 72));
         back.setBounds(10, 20, 50, 20);
@@ -293,6 +289,11 @@ public class OrderView extends javax.swing.JFrame{
         orderTable.setRowHeight(40);
         orderTable.setFocusable(false);
         orderTable.setVisible(true);
+        orderTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                setOrderTable(evt);
+            }
+        });
 
         scrollPane = new JScrollPane(orderTable);
         scrollPane.setAutoscrolls(true);
@@ -304,6 +305,18 @@ public class OrderView extends javax.swing.JFrame{
         frame.setSize(new Dimension(1250, 680));
 
         frame.setVisible(true);
+    }
+
+    private void setOrderTable(java.awt.event.MouseEvent evt) {
+
+        int rowNo = orderTable.getSelectedRow();
+        DefaultTableModel table = (DefaultTableModel) orderTable.getModel();
+
+        txt_id.setText(model.getValueAt(rowNo, 0).toString());
+        txt_idClient.setText(model.getValueAt(rowNo, 1).toString());
+        txt_idProduct.setText(model.getValueAt(rowNo, 2).toString());
+        txt_sum.setText(model.getValueAt(rowNo, 3).toString());
+
     }
 
     private void backAction(java.awt.event.MouseEvent evt) {
@@ -340,6 +353,37 @@ public class OrderView extends javax.swing.JFrame{
             setOrderDetailsToTable();
         } else {
             JOptionPane.showMessageDialog(this, "Order Deletion Failed");
+        }
+    }
+
+    private void billButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        if (addOrder() == true) {
+            FileWriter writeinfile;
+            try {
+                writeinfile = new FileWriter("TRY.txt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                writeinfile.write("Average service time: " + "\n");
+
+                writeinfile.write("Peak hour: "  + " with "  + " clients\n");
+
+            } catch (IOException e) {
+            }
+
+            try {
+                writeinfile.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            JOptionPane.showMessageDialog(this, "Bill Generated");
+            clearTable();
+            setOrderDetailsToTable();
+        } else {
+            JOptionPane.showMessageDialog(this, "Bill Generating Failed");
         }
     }
 

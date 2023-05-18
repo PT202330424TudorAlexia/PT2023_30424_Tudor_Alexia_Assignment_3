@@ -39,7 +39,6 @@ public class View extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       // setSize(1250, 600);
         setLayout(null);
 
         jLabel1 = new JLabel();

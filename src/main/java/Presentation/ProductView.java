@@ -1,5 +1,9 @@
 package Presentation;
+import BusinessLogic.ClientBLL;
+import BusinessLogic.ProductBLL;
 import Connection.ConnectionFactory;
+import Model.Client;
+import Model.Product;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,7 +20,7 @@ import java.sql.Statement;
 public class ProductView extends javax.swing.JFrame{
 
     String name, emailrep;
-    int id, nr,price;
+    int id, stock,price;
     DefaultTableModel model;
     JButton[] functionButtons = new JButton[3];
     JButton addButton, updateButton, deleteButton;
@@ -35,7 +39,7 @@ public class ProductView extends javax.swing.JFrame{
     private JTable productTable;
     private JTextField txt_id;
     private JTextField txt_name;
-    private JTextField txt_nr;
+    private JTextField txt_stock;
     private JTextField txt_emailrep;
     private JTextField txt_price;
 
@@ -57,11 +61,11 @@ public class ProductView extends javax.swing.JFrame{
             while (rs.next()) {
                 String id = rs.getString("id");
                 String name = rs.getString("name");
-                String nr = rs.getString("nr");
+                String stock = rs.getString("stock");
                 String price = rs.getString("price");
                 String email = rs.getString("emailrep");
 
-                Object[] obj = {id, name, nr, price, email};
+                Object[] obj = {id, name, stock, price, email};
                 model = (DefaultTableModel) productTable.getModel();
                 model.addRow(obj);
             }
@@ -72,88 +76,59 @@ public class ProductView extends javax.swing.JFrame{
     }
 
     public boolean addProduct() {
-        boolean isAdded = false;
+        boolean isAdded;
         id = Integer.parseInt(txt_id.getText());
         name = txt_name.getText();
-        nr = Integer.parseInt(txt_nr.getText());
+        stock = Integer.parseInt(txt_stock.getText());
         emailrep = txt_emailrep.getText();
         price = Integer.parseInt(txt_price.getText());
+        Product product = new Product(id, name, stock,price,emailrep);
+        ProductBLL bll=new ProductBLL();
 
+        bll.insertProduct(product);
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "insert into product values(?,?,?,?,?)";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
-            pst.setString(2, name);
-            pst.setInt(3, nr);
-            pst.setInt(4, price);
-            pst.setString(5, emailrep);
-
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isAdded = true;
-            } else {
-                isAdded = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (product!=null) {
+            isAdded = true;
+        } else {
+            isAdded = false;
         }
+
         return isAdded;
 
     }
 
     public boolean updateProduct() {
-        boolean isUpdated = false;
+        boolean isUpdated;
         id = Integer.parseInt(txt_id.getText());
         name = txt_name.getText();
-        nr = Integer.parseInt(txt_nr.getText());
+        stock = Integer.parseInt(txt_stock.getText());
         emailrep = txt_emailrep.getText();
         price = Integer.parseInt(txt_price.getText());
+        Product product = new Product(id, name, stock,price,emailrep);
+        ProductBLL bll=new ProductBLL();
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "update client set name = ?,nr = ?,price = ?,emailrep = ? where id = ?";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, name);
-            pst.setInt(2, nr);
-            pst.setInt(3, price);
-            pst.setString(4, emailrep);
-            pst.setInt(5, id);
-
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isUpdated = true;
-            } else {
-                isUpdated = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        bll.updateProduct(product);
+        if (product != null) {
+            isUpdated = true;
+        } else {
+            isUpdated = false;
         }
 
         return isUpdated;
     }
 
     public boolean deleteProduct() {
-        boolean isDeleted = false;
+        boolean isDeleted;
         id = Integer.parseInt(txt_id.getText());
+        Product product = new Product(id, name, stock,price,emailrep);
+        ProductBLL bll=new ProductBLL();
 
-        try {
-            Connection con = ConnectionFactory.getConnection();
-            String sql = "delete from product where id = ? ";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setInt(1, id);
-
-            int rowCount = pst.executeUpdate();
-            if (rowCount > 0) {
-                isDeleted = true;
-            } else {
-                isDeleted = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        bll.deleteProduct(product);
+        if (product !=null ) {
+            isDeleted = true;
+        } else {
+            isDeleted = false;
         }
-
         return isDeleted;
     }
 
@@ -174,7 +149,7 @@ public class ProductView extends javax.swing.JFrame{
         jLabel3 = new JLabel();
         jLabel5 = new JLabel();
         txt_name = new JTextField();
-        txt_nr = new JTextField();
+        txt_stock = new JTextField();
         txt_emailrep = new JTextField();
         txt_price = new JTextField();
         jLabel4 = new JLabel();
@@ -220,14 +195,14 @@ public class ProductView extends javax.swing.JFrame{
         jLabel3.setFont(new Font("Verdana", 0, 17)); // NOI18N
         jLabel3.setForeground(new Color(250, 199, 72));
         jLabel3.setBounds(40, 270, 310, 30);
-        jLabel3.setText("Enter product stock nr : ");
+        jLabel3.setText("Enter product stock : ");
         frame.add(jLabel3);
 
-        txt_nr.setBackground(new Color(249, 233, 236));
-        txt_nr.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(255, 255, 255)));
-        txt_nr.setFont(new Font("Tahoma", 0, 17));
-        txt_nr.setBounds(40, 310, 360, 40);
-        frame.add(txt_nr);
+        txt_stock.setBackground(new Color(249, 233, 236));
+        txt_stock.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(255, 255, 255)));
+        txt_stock.setFont(new Font("Tahoma", 0, 17));
+        txt_stock.setBounds(40, 310, 360, 40);
+        frame.add(txt_stock);
 
         jLabel4.setFont(new Font("Verdana", 0, 17)); // NOI18N
         jLabel4.setForeground(new Color(250, 199, 72));
@@ -302,7 +277,7 @@ public class ProductView extends javax.swing.JFrame{
 
                 },
                 new String[]{
-                        "id", "name", "nr", "price", "emailrep"
+                        "id", "name", "stock", "price", "emailrep"
                 }
         ));
 
@@ -311,6 +286,12 @@ public class ProductView extends javax.swing.JFrame{
         productTable.setRowHeight(40);
         productTable.setFocusable(false);
         productTable.setVisible(true);
+        productTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                setProductTable(evt);
+            }
+        });
+
 
         scrollPane = new JScrollPane(productTable);
         scrollPane.setAutoscrolls(true);
@@ -322,6 +303,19 @@ public class ProductView extends javax.swing.JFrame{
         frame.setSize(new Dimension(1250, 680));
 
         frame.setVisible(true);
+    }
+
+    private void setProductTable(java.awt.event.MouseEvent evt) {
+
+        int rowNo = productTable.getSelectedRow();
+        DefaultTableModel table = (DefaultTableModel) productTable.getModel();
+
+        txt_id.setText(model.getValueAt(rowNo, 0).toString());
+        txt_name.setText(model.getValueAt(rowNo, 1).toString());
+        txt_stock.setText(model.getValueAt(rowNo, 2).toString());
+        txt_price.setText(model.getValueAt(rowNo, 3).toString());
+        txt_emailrep.setText(model.getValueAt(rowNo, 4).toString());
+
     }
 
     private void backAction(java.awt.event.MouseEvent evt) {
