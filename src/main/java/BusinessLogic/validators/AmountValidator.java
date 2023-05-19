@@ -7,6 +7,9 @@ import Model.Product;
 
 import java.util.List;
 
+/**
+ * The AmountValidator class validates the quantity of a product in an Order, such that it doesn't order more than available in stock.
+ */
 public class AmountValidator  implements Validator<Order> {
 
     public void validate(Order t) {

@@ -1,5 +1,8 @@
 package Model;
 
+/**
+ * The Product class represents a product with its information and stock details.
+ */
 public class Product {
     private int id;
     private String name;
@@ -8,6 +11,15 @@ public class Product {
     private String emailRep;
 
 
+    /**
+     * Constructs a Product object with the specified ID, name, stock quantity, price, and email of the representative.
+     *
+     * @param id        The ID of the product
+     * @param name      The name of the product
+     * @param stock     The stock quantity of the product
+     * @param price     The price of the product
+     * @param emailRep  The email of the representative
+     */
     public Product(int id,String name,int stock,int price,String emailRep)
     {
         super();

@@ -1,0 +1,179 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+interface Validator
+class StockValidator
+{
+   {field}
+   {method}
+validate(Product t): void
+}
+class EmailValidator
+{
+   {field}EMAIL_PATTERN:String
+   {method}
+validate(Client t): void
+}
+class EmailRepresentantValidator
+{
+   {field}EMAIL_PATTERN:String
+   {method}
+validate(Product t): void
+}
+class ClientAgeValidator
+{
+   {field}MIN_AGE : int
+          MAX_AGE : int
+   {method}
+validate(Client t): void
+}
+class AmountValidator
+{
+   {field}
+   {method}
+validate(Order t): void
+}
+
+Validator <|.. ClientAgeValidator
+Validator <|.. StockValidator
+Validator <|.. EmailRepresentantValidator
+Validator <|.. EmailValidator
+Validator <|.. AmountValidator
+
+ProductDAO ..> EmailRepresentantValidator: Use
+ProductDAO ..> StockValidator: Use
+ClientDAO ..> ClientAgeValidator: Use
+ClientDAO ..> EmailValidator: Use
+OrderDAO ..> AmountValidator: Use
+
+
+class ProductBLL
+{
+   {field}List<Validator<Product>>: validators;
+                    ProductDAO: productDAO;
+   {method}
+findProductById (int id): Product
+insertProduct(Product product): Product
+deleteProduct(Product product): Product
+updateProduct(Product product): Product
+}
+class OrderBLL
+{
+   {field}List<Validator<Order>>: validators;
+          OrderDAO: orderDAO;
+   {method}
+ findOrderById (int id): Order
+ insertOrder(Order order): Order
+ deleteOrder(Order order): Order
+ updateOrder(Order order): Order
+}
+class ClientBLL
+{
+   {field}List<Validator<Client>>: validators;
+   ClientDAO: clientDAO;
+   {method}
+findClientById (int id): Client
+insertClient(Client client): Client
+deleteClient(Client client): Client
+updateClient(Client client): Client
+}
+
+
+class ConnectionFactory {
+{field}
+LOGGER : Logger
+DRIVER : String
+DBURL : String
+USER : String
+PASS : String
+{method}
+createConnection(): Connection
+getConnection(): Connection
+close(Connection connection): void
+}
+
+class ProductDAO
+class OrderDAO
+class ClientDAO
+class AbstractDAO{
+   {field}Logger: Logger.getLogger(AbstractDAO.class.getName())
+   Class<T>: type
+   {method}
+ createSelectQuery(String field): String
+ createInsertQuery(): String
+  createDeleteQuery(): String
+  createUpdateQuery(): String
+findAll(): List<T>
+findById(int id): T
+createObjects(ResultSet resultSet): List<T>
+insert(T t): T
+update(T t): T
+delete(T t): T
+}
+AbstractDAO <|- ProductDAO: extends
+AbstractDAO <|- ClientDAO: extends
+AbstractDAO <|- OrderDAO: extends
+
+class ProductView
+class OrderView
+class ClientView
+class View
+View <|- ProductView: Use
+View <|- OrderView: Use
+View <|- ClientView: Use
+
+ProductDAO <|- ProductBLL: Use
+OrderDAO <|- OrderBLL: Use
+ClientDAO <|- ClientBLL: Use
+
+AbstractDAO --> ConnectionFactory: Use
+
+class Product
+{
+{field}
+ id: int
+ name: String
+ stock: int
+ price: int
+ emailRep: String
+}
+class Order
+{
+{field}
+id: int
+idClient: int
+ idProduct: int
+sum: int
+
+}
+class Client
+{
+{field}
+ id: int
+ name: String
+ address: String
+ email: String
+ age: int
+
+}
+class Bill{
+{field}
+orderId: int
+product: String
+name: String
+nr: int
+price: int
+sum: int
+ address: String
+{method}
+printBill(Bill bill): String
+}
+
+ProductDAO ..> Product: Use
+ClientDAO ..> Client: Use
+OrderDAO ..> Order: Use
+
+class Controller
+Controller o-- View
+
+@enduml

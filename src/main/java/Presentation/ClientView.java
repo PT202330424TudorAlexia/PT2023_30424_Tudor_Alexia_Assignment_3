@@ -11,6 +11,9 @@ import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * The ClientView class represents the graphical user interface for the client managment system.
+ */
 public class ClientView extends javax.swing.JFrame {
 
     String name, address, email;
@@ -365,11 +368,6 @@ public class ClientView extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Client Deletion Failed");
         }
-    }
-
-    public static void main(String args[]) {
-
-        ClientView view = new ClientView();
     }
 
 }

@@ -1,8 +1,12 @@
 package Presentation;
 
 import BusinessLogic.OrderBLL;
-import BusinessLogic.ProductBLL;
 import Connection.ConnectionFactory;
+import DataAccess.ClientDAO;
+import DataAccess.OrderDAO;
+import DataAccess.ProductDAO;
+import Model.Bill;
+import Model.Client;
 import Model.Order;
 import Model.Product;
 
@@ -16,10 +20,13 @@ import java.awt.event.MouseEvent;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
+/**
+ * The OrderView class represents the graphical user interface for the order managment system.
+ */
 public class OrderView extends javax.swing.JFrame{
 
     int id, idClient,idProduct,sum;
@@ -86,7 +93,7 @@ public class OrderView extends javax.swing.JFrame{
         Order order = new Order(id, idClient, idProduct,sum);
         OrderBLL bll=new OrderBLL();
 
-        bll.insertOrder(order);
+        bll.insertOrder(order,idProduct);
 
         if (order!=null) {
             isAdded = true;
@@ -122,10 +129,13 @@ public class OrderView extends javax.swing.JFrame{
     public boolean deleteOrder() {
         boolean isDeleted = false;
         id = Integer.parseInt(txt_id.getText());
+        idClient = Integer.parseInt(txt_idClient.getText());
+        idProduct = Integer.parseInt(txt_idProduct.getText());
+        sum = Integer.parseInt(txt_sum.getText());
         Order order = new Order(id, idClient, idProduct,sum);
         OrderBLL bll=new OrderBLL();
 
-        bll.deleteOrder(order);
+        bll.deleteOrder(order,idProduct);
 
         if (order !=null ) {
             isDeleted = true;
@@ -164,6 +174,7 @@ public class OrderView extends javax.swing.JFrame{
         deleteButton = new JButton();
         updateButton = new JButton();
         addButton = new JButton();
+        billButton = new JButton();
 
         setUndecorated(true);
         frame.setLocationRelativeTo(null);
@@ -254,8 +265,8 @@ public class OrderView extends javax.swing.JFrame{
         frame.add(updateButton);
 
         billButton.setBackground(new Color(250, 199, 72));
-        billButton.setText("Update");
-        billButton.setBounds(625, 480, 80, 40);
+        billButton.setText("Bill");
+        billButton.setBounds(875, 480, 80, 40);
 
         billButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -357,39 +368,55 @@ public class OrderView extends javax.swing.JFrame{
     }
 
     private void billButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        if (addOrder() == true) {
+
             FileWriter writeinfile;
             try {
-                writeinfile = new FileWriter("TRY.txt");
+                writeinfile = new FileWriter("BillGenerated.txt");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
             try {
-                writeinfile.write("Average service time: " + "\n");
 
-                writeinfile.write("Peak hour: "  + " with "  + " clients\n");
+                OrderDAO dao=new OrderDAO();
+                java.util.List<Order> orderList = new ArrayList<>();
+                orderList= dao.findAll();
+                for (Order o: orderList) {
+                    int productid= o.getIdProduct();
+                    Product product;
+                    ProductDAO daoP = new ProductDAO();
+                    product = daoP.findById(productid);
+                    int prodstock=product.getStock();
+                    product.setStock(prodstock+sum);
+                    String prodname=product.getName();
+                    int prodprice=product.getPrice();
+
+                    Client client;
+                    ClientDAO daoC = new ClientDAO();
+                    client = daoC.findById(productid);
+                    String clientName=client.getName();
+                    String clientAddress=client.getAddress();
+
+
+                    Bill bill=new Bill(o.getId(),prodname,clientName,o.getSum(),prodprice,clientAddress);
+                    String orderBill=bill.printBill(bill);
+                    writeinfile.write(orderBill+"\n");
+
+                }
+
 
             } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Bill Generating Failed");
+
             }
 
             try {
                 writeinfile.close();
+                JOptionPane.showMessageDialog(this, "Bill Generated");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            JOptionPane.showMessageDialog(this, "Bill Generated");
-            clearTable();
-            setOrderDetailsToTable();
-        } else {
-            JOptionPane.showMessageDialog(this, "Bill Generating Failed");
-        }
-    }
-
-    public static void main(String args[]) {
-
-        OrderView view = new OrderView();
     }
 
 }

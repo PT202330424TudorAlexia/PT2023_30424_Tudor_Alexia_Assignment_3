@@ -1,0 +1,48 @@
+Bill order: 1
+Product Coca-Cola
+Price 3
+Quantity: 6
+Total Sum: 18
+Bought by: Cebuc Anneliese
+Shipping to: Str Porii
+
+Bill order: 2
+Product Coca-Cola
+Price 3
+Quantity: 3
+Total Sum: 9
+Bought by: Cebuc Anneliese
+Shipping to: Str Porii
+
+Bill order: 3
+Product Coca-Cola
+Price 3
+Quantity: 3
+Total Sum: 9
+Bought by: Cebuc Anneliese
+Shipping to: Str Porii
+
+Bill order: 4
+Product Sushi
+Price 100
+Quantity: 3
+Total Sum: 300
+Bought by: Banceanu Tina
+Shipping to: Str Colonie
+
+Bill order: 6
+Product Ghiozdan
+Price 90
+Quantity: 2
+Total Sum: 180
+Bought by: Aristotel Catalin
+Shipping to: Str Eroilor
+
+Bill order: 7
+Product Ghiozdan
+Price 90
+Quantity: 8
+Total Sum: 720
+Bought by: Aristotel Catalin
+Shipping to: Str Eroilor
+

@@ -17,6 +17,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * The ProductView class represents the graphical user interface for the product managment system.
+ */
+
 public class ProductView extends javax.swing.JFrame{
 
     String name, emailrep;
@@ -355,9 +359,5 @@ public class ProductView extends javax.swing.JFrame{
         }
     }
 
-    public static void main(String args[]) {
-
-        ProductView view = new ProductView();
-    }
 
 }

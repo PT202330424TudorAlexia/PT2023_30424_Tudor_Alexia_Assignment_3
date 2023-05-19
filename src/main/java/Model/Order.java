@@ -1,5 +1,8 @@
 package Model;
 
+/**
+ * The Order class represents an order made by a client for a product.
+ */
 public class Order {
 
     private int id;
@@ -7,6 +10,14 @@ public class Order {
     private int idProduct;
     private int sum;
 
+    /**
+     * Constructs an Order object with the specified ID, client ID, product ID, and sum.
+     *
+     * @param id        The ID of the order
+     * @param idClient  The ID of the client who made the order
+     * @param idProduct The ID of the product in the order
+     * @param sum       The sum of the order
+     */
     public Order(int id,int idClient,int idProduct,int sum)
     {
         super();
@@ -22,6 +33,10 @@ public class Order {
         this.idClient=idClient;
         this.idProduct=idProduct;
         this.sum=sum;
+    }
+
+    public Order(){
+
     }
 
     public int getId() {

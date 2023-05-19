@@ -15,6 +15,11 @@ import java.util.logging.Logger;
 
 import Connection.ConnectionFactory;
 
+/**
+ * The AbstractDAO class provides generic database operations for a specific type.
+ *
+ * @param <T> The type of the objects managed by the DAO.
+ */
 public class AbstractDAO<T> {
     protected static final Logger LOGGER = Logger.getLogger(AbstractDAO.class.getName());
 
@@ -28,18 +33,20 @@ public class AbstractDAO<T> {
 
     private String createSelectQuery(String field) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT ");
-        sb.append(" * ");
-        sb.append(" FROM ");
-        sb.append(type.getSimpleName());
-        sb.append(" WHERE " + field + " =?");
+        sb.append("SELECT * FROM ");
+        sb.append("`" + type.getSimpleName() + "`");
+
+        if (field != null && !field.isEmpty()) {
+            sb.append(" WHERE " + field + " = ?");
+        }
+
         return sb.toString();
     }
 
     private String createInsertQuery() {
         StringBuilder sb = new StringBuilder();
         sb.append("insert into ");
-        sb.append(type.getSimpleName());
+        sb.append("`"+type.getSimpleName()+"`");
         sb.append(" VALUES ( ");
         for (int i = 0; i < type.getDeclaredFields().length; i++) {
             sb.append("?");
@@ -54,7 +61,7 @@ public class AbstractDAO<T> {
     private String createDeleteQuery() {
         StringBuilder sb = new StringBuilder();
         sb.append("DELETE FROM ");
-        sb.append(type.getSimpleName());
+        sb.append("`"+type.getSimpleName()+"`");
         sb.append(" WHERE id = ?");
         return sb.toString();
     }
@@ -78,12 +85,19 @@ public class AbstractDAO<T> {
         return sb.toString();
     }
 
+
+    /**
+     * Finds all objects of the specified type.
+     *
+     * @return A list of objects.
+     */
     public List<T> findAll() {
         List<T> result = new ArrayList<>();
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-        String query = createSelectQuery("id");
+        String query = createSelectQuery(null); // Pass null to retrieve all rows
+
         try {
             connection = ConnectionFactory.getConnection();
             statement = connection.prepareStatement(query);
@@ -96,6 +110,7 @@ public class AbstractDAO<T> {
             ConnectionFactory.close(statement);
             ConnectionFactory.close(connection);
         }
+
         return result;
     }
 
@@ -150,6 +165,12 @@ public class AbstractDAO<T> {
         return list;
     }
 
+    /**
+     * Inserts a new object into the database.
+     *
+     * @param t The object to insert.
+     * @return The inserted object.
+     */
     public T insert(T t) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -182,6 +203,12 @@ public class AbstractDAO<T> {
         return null;
     }
 
+    /**
+     * Updates an existing object in the database.
+     *
+     * @param t The object to update.
+     * @return The updated object.
+     */
     public T update(T t) {
         Connection connection = null;
         PreparedStatement statement = null;
@@ -213,6 +240,12 @@ public class AbstractDAO<T> {
         return null;
     }
 
+    /**
+     * Deletes an object from the database.
+     *
+     * @param t The object to delete.
+     * @return The deleted object.
+     */
     public T delete(T t) {
         Connection connection = null;
         PreparedStatement statement = null;

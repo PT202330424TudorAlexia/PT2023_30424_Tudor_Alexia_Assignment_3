@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import BusinessLogic.validators.EmailValidator;
-import BusinessLogic.validators.StudentAgeValidator;
+import BusinessLogic.validators.ClientAgeValidator;
 import BusinessLogic.validators.Validator;
 import DataAccess.ClientDAO;
 import Model.Client;
 
+/**
+ * The ClientBLL class provides business logic operations for clients.
+ */
 public class ClientBLL {
 
     private List<Validator<Client>> validators;
@@ -18,7 +21,7 @@ public class ClientBLL {
     public ClientBLL() {
         validators = new ArrayList<Validator<Client>>();
         validators.add(new EmailValidator());
-        validators.add(new StudentAgeValidator());
+        validators.add(new ClientAgeValidator());
 
         clientDAO = new ClientDAO();
     }

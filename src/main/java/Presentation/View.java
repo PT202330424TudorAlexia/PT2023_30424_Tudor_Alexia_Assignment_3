@@ -8,8 +8,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * The View class represents the graphical user main interface for the warehouse management system.
+ */
 public class View extends javax.swing.JFrame {
-
 
     String name, address, email;
     int id, age;
@@ -141,10 +143,6 @@ public class View extends javax.swing.JFrame {
 
     }
 
-    public static void main(String args[]) {
-
-        View view = new View();
-    }
 
 }
 

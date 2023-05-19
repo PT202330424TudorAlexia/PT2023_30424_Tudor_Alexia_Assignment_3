@@ -12,6 +12,9 @@ import DataAccess.ProductDAO;
 import Model.Client;
 import Model.Product;
 
+/**
+ * The ProductBLL class provides business logic operations for products.
+ */
 public class ProductBLL {
 
     private List<Validator<Product>> validators;

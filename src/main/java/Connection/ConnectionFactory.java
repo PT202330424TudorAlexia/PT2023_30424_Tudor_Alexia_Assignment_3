@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The ConnectionFactory class provides methods for creating and managing database connections.
+ */
 public class ConnectionFactory {
 
     private static final Logger LOGGER = Logger.getLogger(ConnectionFactory.class.getName());
@@ -26,6 +29,11 @@ public class ConnectionFactory {
         }
     }
 
+    /**
+     * Creates a new database connection.
+     *
+     * @return The database connection.
+     */
     private Connection createConnection() {
         Connection connection = null;
         try {

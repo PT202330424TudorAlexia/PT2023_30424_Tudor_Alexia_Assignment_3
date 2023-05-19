@@ -1,5 +1,7 @@
 package Model;
-
+/**
+ * The Client class represents a client with their personal information.
+ */
 public class Client {
     private int id;
     private String name;
@@ -7,6 +9,15 @@ public class Client {
     private String email;
     private int age;
 
+    /**
+     * Constructs a Client object with the specified ID, name, address, email, and age.
+     *
+     * @param id      The ID of the client
+     * @param name    The name of the client
+     * @param address The address of the client
+     * @param email   The email of the client
+     * @param age     The age of the client
+     */
     public Client(int id,String name,String address,String email,int age)
     {
         super();
@@ -25,6 +36,9 @@ public class Client {
         this.email=email;
         this.age=age;
     }
+
+    public Client(){}
+
 
     public int getId() {
         return id;

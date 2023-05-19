@@ -2,6 +2,9 @@ package BusinessLogic.validators;
 
 import Model.Product;
 
+/**
+ * A validator that validates the stock of a product.
+ */
 public class StockValidator implements Validator<Product> {
 
     public void validate(Product t) {
